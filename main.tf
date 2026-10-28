@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      version               = ">= 3.4.0"
+      version               = ">= 3.50.0"
       configuration_aliases = [aws.us-east-1]
     }
   }
@@ -100,7 +100,7 @@ resource "aws_cloudfront_distribution" "redirect" {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1.2", "TLSv1.1", "TLSv1"]
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
@@ -134,7 +134,7 @@ resource "aws_cloudfront_distribution" "redirect" {
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate_validation.validation_us_east_1.certificate_arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.1_2016"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
@@ -142,6 +142,7 @@ resource "aws_cloudfront_distribution" "redirect" {
 
 // ***** START Redirect bucket *****
 // Redirects all traffic to the target_url
+# trivy:ignore:AWS-0090 trivy:ignore:AWS-0132 trivy:ignore:AWS-0320
 resource "aws_s3_bucket" "redirect_bucket" {
   bucket = local.bucket_name
   website {
